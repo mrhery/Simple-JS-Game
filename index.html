@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My First Game</title>
+
+<style>
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+}
+
+.item {
+	position: absolute;
+	user-select: none;
+	cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<audio id="click" style="display:none">
+	<source src="assets/click.wav">
+</audio>
+
+<audio id="background" loop style="display:none">
+	<source src="assets/background.mp3">
+</audio>
+
+<div style="width: 550px; background-color: #9e9d9d; height: 550px; position: relative;">
+	
+	<div id="start-menu" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 300px; padding: 15px; background-color: black; z-index: 10; border-radius: 10px;">
+		<div style="text-align: center;">
+			<h4 style="color: white;">Welcome to SimpleSpace</h4>
+			
+			<h5 id="hidden-score" style="color: white; display: none;">Your score is: <span id="score-text"></span></h5>
+			
+			<button id="start" style="background-color: #0e5c24; color: white; width: 90%; padding: 5px; border-radius: 5px;">
+				Start Now
+			</button>
+		</div>
+	</div>
+	
+	<img src="assets/star.png" id="star" class="item" style="width: 30px;" />
+	<img src="assets/spaceship.png" id="spaceship" class="item" style="width: 50px;" />
+	
+	<span class="item" style="right: 10px; top: 10px; color: white;" id="timer-countdown">30</span>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+var spaceship = $("#spaceship");
+var star = $("#star");
+var start = $("#start");
+var menu = $("#start-menu");
+var scoretext = $("#score-text");
+var hiddenscore = $("#hidden-score");
+var movex = 0;
+var movey = 0;
+var speed = 5;
+var playing = false;
+var score = 0;
+var seconds = 30;
+var countdown = $("#timer-countdown");
+
+var background = $("#background")[0];
+background.volume = 0.01;
+background.load();
+background.play();
+
+//keyup, keypress
+$(document).on("keyup", function(e){
+	switch(e.keyCode){
+		case 37: //left
+			movex = -1 * speed;
+			movey = 0 * speed;
+		break;
+		
+		case 38: //top
+			movey = -1 * speed;
+			movex = 0 * speed;
+		break;
+		
+		case 39: //right
+			movex = 1 * speed;
+			movey = 0 * speed;
+		break;
+		
+		case 40: //bottom
+			movey = 1 * speed;
+			movex = 0 * speed;
+		break;
+	}
+});
+
+start.on("click", function(){
+	playing = true;
+	
+	menu.hide();
+	timer();
+});
+
+function timer(){
+	setTimeout(function(){
+		seconds--;
+		countdown.text(seconds);
+		
+		if(seconds == 0){
+			menu.show();
+			hiddenscore.show();
+			scoretext.text(score);
+			
+			seconds = 30;
+			playing = false;
+			countdown.text(seconds);
+		}else{
+			timer();
+		}
+	}, 1000);
+}
+
+var a = $("#click")[0];
+a.load();
+
+function showStar(){
+	var star = $("#star");
+	
+	var x = Math.ceil(Math.random() * 500);
+	var y = Math.ceil(Math.random() * 500);
+	
+	star.css("left", x + "px");
+	star.css("top", y + "px");
+}
+
+showStar();
+
+setInterval(function(){
+	if(playing){
+		var currentX = parseInt(spaceship.css("left"));
+		var currentY = parseInt(spaceship.css("top"));
+		
+		currentX += movex;
+		currentY += movey;
+		
+		if(currentX > 500){
+			currentX = 0;
+		}
+		
+		if(currentX < 0){
+			currentX = 500;
+		}
+		
+		if(currentY > 500){
+			currentY = 0;
+		}
+		
+		if(currentY < 0){
+			currentY = 500;
+		}
+		
+		spaceship.css("left", currentX + "px");
+		spaceship.css("top", currentY + "px");
+		
+		var starX = parseInt(star.css("left"));
+		var starY = parseInt(star.css("top"));
+		
+		if(
+			(
+				((currentX + 25) >= starX && (currentX + 25) < (starX + 30))
+			) &&
+			(
+				((currentY + 25) >= starY && (currentY + 25) < (starY + 30))
+			)
+		){
+			a.play();
+			showStar();
+			score++;
+		}
+	}
+}, 20); 
+
+/*
+20ms = 50hz
+1000ms = 1hz
+500ms = 2hz
+100ms = 10hz
+
+f = 1000/T (period time) (T = ms)
+
+
+*/
+
+</script>
+
+</body>
+</html>
