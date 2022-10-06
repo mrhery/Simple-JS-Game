@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My First Game</title>
+
+<style>
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+}
+
+body {
+	background-color: #133d00;
+}
+
+.item {
+	position: absolute;
+}
+
+.pos-center {
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+#menu {
+	background-color: white;
+	padding: 10px;
+}
+</style>
+</head>
+
+<body>
+
+	<div id="menu" class="item pos-center">
+		<button style="width: 100%; background-color: green; color: white; padding: 5px;" id="start-button">
+			Start
+		</button>
+	</div>
+	
+	<img id="huruf"  class="item pos-center" style="display: none;" />
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+var path = "./assets/items/";
+
+var huruf = $("#huruf");
+var menu = $("#menu");
+var startbtn = $("#start-button");
+var startno = 1;
+var endno = 5;
+var currentno = 1;
+
+startbtn.on("click", function(){
+	menu.hide();
+	
+	currentno = 1;
+	showFlashCard();
+});
+
+function showFlashCard(){
+	if(currentno <= endno){
+		huruf.prop("src", path + currentno + ".jpg");
+		huruf.show();
+		
+		setTimeout(function(){
+			currentno++;
+			
+			showFlashCard();
+		}, 2000);
+	}else{
+		huruf.hide();
+		menu.show();
+	}
+}
+
+</script>
+
+</body>
+</html>
